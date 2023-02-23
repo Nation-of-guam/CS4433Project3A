@@ -35,8 +35,8 @@ def infected_small():
 
     name = "INFECTED-small.csv"
     infected.to_csv(name, index=False, header=False)
-    name = "PEOPLE-SOME-INFECTED-large"
-    someInfected.to_csv()
+    name = "PEOPLE-SOME-INFECTED-large.csv"
+    someInfected.to_csv(name, index=False, header=False)
     return
 
 infected_small()
