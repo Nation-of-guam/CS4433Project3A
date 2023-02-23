@@ -15,7 +15,7 @@ def people_large():
     df["y"] = seedsy
 
     name = "PEOPLE-large.csv"
-    df.to_csv(name, index=False, header=False)
+    df.to_csv(name, index=False, header=True)
     return
 def infected_small():
     df = pd.DataFrame()
@@ -34,9 +34,9 @@ def infected_small():
 
 
     name = "INFECTED-small.csv"
-    infected.to_csv(name, index=False, header=False)
+    infected.to_csv(name, index=False, header=True)
     name = "PEOPLE-SOME-INFECTED-large.csv"
-    someInfected.to_csv(name, index=False, header=False)
+    someInfected.to_csv(name, index=False, header=True)
     return
-
+people_large()
 infected_small()
