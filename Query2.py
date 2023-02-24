@@ -1,13 +1,31 @@
+from pyspark import SparkContext
+
 from pyspark.sql import SparkSession
 
-# Create SparkSession 
+# Create SparkContext
+
+sc = SparkContext("local", "RDD Example")
+
+# Create SparkSession
+
 spark = SparkSession.builder \
-      .master("local[1]") \
-      .appName("SparkByExamples.com") \
-      .getOrCreate()
+ \
+    .master("local[1]") \
+ \
+    .appName("SparkByExamples.com") \
+ \
+    .getOrCreate()
 
-df = spark.read.csv("PEOPLE-SOME-INFECTED-large.csv", header=True, inferSchema=True)
+# Read CSV file as RDD
 
-infected_count = df.filter(df.INFECTED == 'yes').count()
+rdd = sc.textFile("PEOPLE-SOME-INFECTED-large.csv") \
+ \
+    .map(lambda x: x.split(","))
+
+# Filter out infected people and count
+
+infected_count = rdd.filter(lambda x: x[3] == "yes").count()
+
+# Print result
 
 print("Number of infected people:", infected_count)

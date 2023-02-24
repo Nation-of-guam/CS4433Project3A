@@ -1,20 +1,38 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import sqrt
+from pyspark.sql.types import IntegerType, StringType, StructField, StructType
 
-# Create SparkSession 
+# Create a SparkSession
 spark = SparkSession.builder \
       .master("local[1]") \
       .appName("SparkByExamples.com") \
       .getOrCreate()
 
-people = spark.read.csv("PEOPLE-large.csv", header=True, inferSchema=True)
+# Define the schema of the CSV files
+schema1 = StructType([
+      StructField("id", IntegerType()),
+      StructField("x", IntegerType()),
+      StructField("y", IntegerType())
+])
+schema2 = StructType([
+    StructField("id", IntegerType()),
+    StructField("x", IntegerType()),
+    StructField("y", IntegerType()),
+    StructField("INFECTED", StringType())
+])
 
-infected = spark.read.csv("INFECTED-small.csv", header=True, inferSchema=True)
+# Load the PEOPLE-large CSV file as an RDD and extract the (id, x, y) coordinates
+people_rdd = spark.read.format("csv").option("header", True).schema(schema1).load("PEOPLE-large.csv") \
+    .select("id", "x", "y").rdd.map(tuple)
 
-join_pairs = infected.join(people, how='cross') \
-                    .filter(sqrt((infected.x - people.x) ** 2 + (infected.y - people.y) ** 2) <= 6) \
-                    .select(people.id.alias('pi'))
+# Load the INFECTED-small CSV file as an RDD and extract the (id, x, y) coordinates
+infected_rdd = spark.read.format("csv").option("header", True).schema(schema2).load("INFECTED-small.csv") \
+    .select("id", "x", "y").rdd.map(tuple)
 
-unique_join_pairs = join_pairs.distinct()
+# Compute the join pairs of people who were in close proximity to each infected person
+infected_coords = infected_rdd.collect()
+join_pairs_rdd = people_rdd.filter(lambda p_j: any((p_j[1] - infect_i[1]) ** 2 + (p_j[2] - infect_i[2]) ** 2 <= 36 for infect_i in infected_coords)) \
+                  .map(lambda p_j: (p_j[0], [infect_i[0] for infect_i in infected_coords if (p_j[1] - infect_i[1]) ** 2 + (p_j[2] - infect_i[2]) ** 2 <= 36])) \
+                  .reduceByKey(lambda a, b: list(set(a) | set(b)))
 
-unique_join_pairs.show()
+# Show the resulting RDD
+join_pairs_rdd.foreach(print)
