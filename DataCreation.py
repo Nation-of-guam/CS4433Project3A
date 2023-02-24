@@ -5,9 +5,9 @@ from sklearn.model_selection import train_test_split
 
 
 def people_large():
-    size = 1000000
-    seedsx = np.random.randint(0, 10000, size=size)
-    seedsy = np.random.randint(0, 10000, size=size)
+    size = 10000
+    seedsx = np.random.randint(0, 100, size=size)
+    seedsy = np.random.randint(0, 100, size=size)
 
     df = pd.DataFrame()
     df["id"] = range(0,size)

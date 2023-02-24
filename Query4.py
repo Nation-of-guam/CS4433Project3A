@@ -1,5 +1,7 @@
 from pyspark.sql import SparkSession
 from pyspark.sql.types import IntegerType, StringType, StructField, StructType
+import os
+
 
 # Create a SparkSession
 spark = SparkSession.builder \
@@ -31,8 +33,7 @@ infected_rdd = spark.read.format("csv").option("header", True).schema(schema2).l
 # Compute the join pairs of people who were in close proximity to each infected person
 infected_coords = infected_rdd.collect()
 join_pairs_rdd = people_rdd.filter(lambda p_j: any((p_j[1] - infect_i[1]) ** 2 + (p_j[2] - infect_i[2]) ** 2 <= 36 for infect_i in infected_coords)) \
-                  .map(lambda p_j: (p_j[0], [infect_i[0] for infect_i in infected_coords if (p_j[1] - infect_i[1]) ** 2 + (p_j[2] - infect_i[2]) ** 2 <= 36])) \
-                  .reduceByKey(lambda a, b: list(set(a) | set(b)))
+                  .map(lambda p_j: (p_j[0], [infect_i[0] for infect_i in infected_coords if (p_j[1] - infect_i[1]) ** 2 + (p_j[2] - infect_i[2]) ** 2 <= 36]))
+join_pairs_rdd = join_pairs_rdd.mapValues(lambda v: list(set(v)))
 
-# Show the resulting RDD
 join_pairs_rdd.foreach(print)
