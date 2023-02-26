@@ -38,8 +38,7 @@ distances = joined_data.map(lambda row: funct(row) if funct(row)[2] <= 6 else (-
 #Filters to just ids with distance of 6 or less
 filtered_distances = distances.filter(lambda row: row[0] != -1).sortBy(lambda x : x[0])
 
-result = filtered_distances.map(lambda x : (x[0], x[1])).groupByKey().mapValues(lambda v : len(set(v))).sortByKey().collect()
-
+result = filtered_distances.map(lambda x : (x[0], x[1])).groupByKey().mapValues(lambda v : len(set(v))).collect()
 
 
 for i in result:
