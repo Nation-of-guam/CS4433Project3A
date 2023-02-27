@@ -8,9 +8,6 @@ spark = SparkSession.builder \
       .appName("SparkByExamples.com") \
       .getOrCreate()
 
-#@AidanBurns
-
-
 # Define the function to calculate distance between two points
 # Returns:
 # INFECTED id, nonInfected id, distance
