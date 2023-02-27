@@ -1,4 +1,3 @@
-from pyspark.sql.functions import count
 from pyspark.sql.types import StructType, StructField, IntegerType, StringType
 from pyspark.sql import SparkSession
 from math import sqrt
